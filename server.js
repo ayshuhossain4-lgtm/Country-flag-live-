@@ -150,7 +150,7 @@ app.post("/api/test", (req,res) => {
 });
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "Country_Battle_Live_with_Viewer_Names.html"));
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 app.listen(PORT, () => console.log(`Country Flag Live running on port ${PORT}`));
