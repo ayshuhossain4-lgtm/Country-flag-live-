@@ -1,474 +1,170 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Country Flag Live</title>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Country Chat Battle</title>
 <style>
-*{box-sizing:border-box}
-
-html,body{
-  margin:0;
-  width:100%;
-  min-height:100%;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#000;
-  color:#fff;
-}
-
-body{
-  display:flex;
-  justify-content:center;
-  padding:18px;
-}
-
-.board{
-  width:100%;
-  max-width:520px;
-  min-height:90vh;
-  background:rgba(10,10,15,.96);
-  border:2px solid #292932;
-  border-radius:24px;
-  padding:18px;
-}
-
-.title{
-  text-align:center;
-  font-size:28px;
-  font-weight:900;
-  margin-bottom:5px;
-}
-
-.sub{
-  text-align:center;
-  color:#aaa;
-  font-size:13px;
-  margin-bottom:15px;
-}
-
-.status{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:7px;
-  font-size:12px;
-  color:#aaa;
-  margin-bottom:14px;
-}
-
-.dot{
-  width:9px;
-  height:9px;
-  border-radius:50%;
-  background:#777;
-}
-
-.dot.on{
-  background:#20df6b;
-  box-shadow:0 0 10px #20df6b;
-}
-
-.error{
-  display:none;
-  background:#32171b;
-  color:#ffb4b4;
-  padding:9px;
-  border-radius:10px;
-  font-size:12px;
-  margin-bottom:10px;
-}
-
-#leaderboard{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
-.row{
-  display:grid;
-  grid-template-columns:44px 48px 1fr auto;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  background:#15151b;
-  border:1px solid #292932;
-  border-radius:15px;
-}
-
-.rank{
-  text-align:center;
-  color:#aaa;
-  font-size:18px;
-  font-weight:900;
-}
-
-.flag{
-  font-size:31px;
-}
-
-.country{
-  font-size:17px;
-  font-weight:800;
-}
-
-.points{
-  font-size:19px;
-  font-weight:900;
-}
-
-.recent{
-  margin-top:18px;
-}
-
-.recent h2{
-  font-size:15px;
-  margin:0 0 9px;
-  color:#ddd;
-}
-
-.event{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  padding:8px 10px;
-  margin-bottom:6px;
-  border-radius:10px;
-  background:#111116;
-  font-size:12px;
-  color:#bbb;
-}
-
-.event b{
-  color:#fff;
-}
-
-.empty{
-  text-align:center;
-  color:#777;
-  padding:18px;
-  font-size:13px;
-}
-
-.footer{
-  text-align:center;
-  color:#666;
-  font-size:10px;
-  margin-top:13px;
-}
+:root{--bg:#05070d;--card:#0d1220;--line:#26314a;--pink:#ff3b8d;--yellow:#ffd54a;--muted:#9ca8bd}
+*{box-sizing:border-box}html,body{margin:0;background:#000;color:#fff;font-family:Arial,Helvetica,sans-serif}
+body{min-height:100vh}.wrap{width:min(100%,720px);margin:auto;padding:14px 12px 80px}
+.header{text-align:center;margin-bottom:10px}.header h1{margin:4px 0 2px;font-size:24px}.header p{margin:0;color:#aeb8ca;font-size:12px}
+.status{display:inline-flex;align-items:center;gap:7px;margin:8px auto;padding:5px 9px;border-radius:999px;background:#111827;color:#aeb8ca;font-size:11px}
+.dot{width:7px;height:7px;border-radius:50%;background:#777}.live .dot{background:#30e47a;box-shadow:0 0 10px #30e47a}
+.board{background:linear-gradient(180deg,#101728,#080b13);border:1px solid var(--line);border-radius:18px;padding:12px;box-shadow:0 12px 35px #0008}
+.controls{display:flex;gap:7px;margin-bottom:10px}.controls button{flex:1;border:0;border-radius:10px;padding:10px 7px;background:#1a2234;color:#fff;font-weight:700}
+.controls button.active{background:var(--pink)}.notice{font-size:11px;color:#9ca8bd;text-align:center;margin:4px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.country{position:relative;overflow:hidden;background:#0b1020;border:1px solid #25314a;border-radius:13px;padding:10px;min-height:122px}
+.country.top{border-color:var(--yellow);box-shadow:0 0 18px #ffd54a22}
+.rank{position:absolute;right:8px;top:7px;color:#68748a;font-size:11px;font-weight:800}
+.flag{font-size:36px;line-height:1}.name{font-weight:800;font-size:14px;margin-top:4px}.score{font-size:25px;font-weight:900;color:var(--yellow);margin-top:2px}.bar{height:5px;background:#1d2638;border-radius:99px;margin-top:7px;overflow:hidden}.fill{height:100%;width:0;background:var(--pink);border-radius:99px;transition:width .35s}
+.last{margin-top:7px;font-size:10px;color:#b6c0d1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed{margin-top:10px;background:#090e18;border:1px solid #202a40;border-radius:14px;padding:9px}
+.feed h3{font-size:12px;margin:0 0 6px;color:#d9dfeb}.entry{display:flex;gap:8px;align-items:center;padding:6px 0;border-top:1px solid #182135}.entry:first-of-type{border-top:0}.mini{font-size:23px}.entry b{font-size:11px}.entry span{display:block;color:#8e9ab0;font-size:10px;margin-top:1px}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(30px);opacity:0;transition:.25s;background:#151d2d;border:1px solid #394764;padding:9px 13px;border-radius:12px;font-size:12px;pointer-events:none;z-index:10}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.manual{margin-top:10px;display:flex;gap:6px}.manual input{min-width:0;flex:1;border:1px solid #27324a;border-radius:10px;background:#0b1020;color:#fff;padding:10px}.manual button{border:0;border-radius:10px;background:#fff;color:#000;font-weight:800;padding:0 12px}
+.small{color:#66738b;font-size:10px;text-align:center;margin-top:10px}
+@media(max-width:430px){.grid{grid-template-columns:repeat(2,1fr)}.country{min-height:116px}.flag{font-size:32px}}
 </style>
 </head>
-
 <body>
-
-<div class="board">
-
-  <div class="title">🌍 COUNTRY FLAG LIVE</div>
-
-  <div class="sub">
-    Comment a country name to add +1 point
+<div class="wrap">
+  <div class="header">
+    <h1>🌍 COUNTRY CHAT BATTLE</h1>
+    <p>Comment a country name in YouTube Live → that country's score increases.</p>
+    <div id="status" class="status"><i class="dot"></i><span>Connecting…</span></div>
   </div>
-
-  <div class="status">
-    <span id="dot" class="dot"></span>
-    <span id="statusText">Connecting...</span>
-  </div>
-
-  <div id="error" class="error"></div>
-
-  <div id="leaderboard"></div>
-
-  <div class="recent">
-    <h2>💬 Recent Viewers</h2>
-    <div id="recentList">
-      <div class="empty">Waiting for comments...</div>
+  <div class="board">
+    <div class="controls">
+      <button id="sortBtn" class="active">LIVE RANKING</button>
+      <button id="resetBtn">RESET</button>
     </div>
+    <div class="notice">Example: viewer comments <b>Bangladesh</b> → 🇧🇩 Bangladesh <b>+1</b> and the viewer's name appears below.</div>
+    <div id="grid" class="grid"></div>
+    <div class="feed"><h3>💬 Latest viewers</h3><div id="feed"></div></div>
+    <div class="manual">
+      <input id="testName" placeholder="Test viewer name">
+      <input id="testCountry" placeholder="Bangladesh">
+      <button id="testBtn">TEST</button>
+    </div>
+    <div class="small">TEST works without YouTube. For live mode, open this page from the Node server.</div>
   </div>
-
-  <div class="footer">
-    Country Flag Live • YouTube Live
-  </div>
-
 </div>
+<div id="toast" class="toast"></div>
 
 <script>
-
-const flags = {
-
-"Bangladesh":"🇧🇩",
-"India":"🇮🇳",
-"Pakistan":"🇵🇰",
-"Nepal":"🇳🇵",
-"Bhutan":"🇧🇹",
-"Sri Lanka":"🇱🇰",
-"Thailand":"🇹🇭",
-"Vietnam":"🇻🇳",
-"Indonesia":"🇮🇩",
-"Malaysia":"🇲🇾",
-"Philippines":"🇵🇭",
-
-"Brazil":"🇧🇷",
-"United States":"🇺🇸",
-"Japan":"🇯🇵",
-"South Korea":"🇰🇷",
-"China":"🇨🇳",
-"Russia":"🇷🇺",
-
-"Germany":"🇩🇪",
-"France":"🇫🇷",
-"Italy":"🇮🇹",
-"Spain":"🇪🇸",
-"Portugal":"🇵🇹",
-
-"Canada":"🇨🇦",
-"Australia":"🇦🇺",
-"New Zealand":"🇳🇿",
-"Mexico":"🇲🇽",
-
-"Turkey":"🇹🇷",
-"Iran":"🇮🇷",
-"Iraq":"🇮🇶",
-"Qatar":"🇶🇦",
-"Saudi Arabia":"🇸🇦",
-
-"United Arab Emirates":"🇦🇪",
-"Egypt":"🇪🇬",
-"Morocco":"🇲🇦",
-
-"Albania":"🇦🇱",
-"Kosovo":"🇽🇰",
-"Greece":"🇬🇷",
-"Norway":"🇳🇴",
-"Sweden":"🇸🇪",
-"Finland":"🇫🇮",
-"Denmark":"🇩🇰",
-"Poland":"🇵🇱",
-"Ukraine":"🇺🇦",
-"Romania":"🇷🇴",
-
-"South Africa":"🇿🇦",
-"Nigeria":"🇳🇬",
-"Ghana":"🇬🇭",
-"Kenya":"🇰🇪",
-
-"Argentina":"🇦🇷",
-"Chile":"🇨🇱",
-"Colombia":"🇨🇴",
-"Peru":"🇵🇪",
-"Uruguay":"🇺🇾"
-
-};
-
-
-async function update(){
-
-  try{
-
-    const response =
-      await fetch("/api/state",{cache:"no-store"});
-
-    const data =
-      await response.json();
-
-
-    const dot =
-      document.getElementById("dot");
-
-    const status =
-      document.getElementById("statusText");
-
-    const error =
-      document.getElementById("error");
-
-
-    if(data.connected){
-
-      dot.className="dot on";
-
-      status.textContent =
-        "LIVE • Connected to YouTube";
-
-    }else{
-
-      dot.className="dot";
-
-      status.textContent =
-        "Waiting for YouTube Live";
-
-    }
-
-
-    if(data.error){
-
-      error.style.display="block";
-
-      error.textContent =
-        data.error;
-
-    }else{
-
-      error.style.display="none";
-
-    }
-
-
-    const scores = Object.keys(flags).map(country => [
-  country,
-  Number((data.scores || {})[country] || 0)
-]).sort((a,b) => b[1] - a[1]);
-
-
-    const board =
-      document.getElementById("leaderboard");
-
-
-    if(scores.length){
-
-      board.innerHTML =
-        scores.map((item,index)=>{
-
-          const country =
-            item[0];
-
-          const points =
-            item[1];
-
-          return `
-
-          <div class="row">
-
-            <div class="rank">
-              #${index+1}
-            </div>
-
-            <div class="flag">
-              ${flags[country] || "🌐"}
-            </div>
-
-            <div class="country">
-              ${country}
-            </div>
-
-            <div class="points">
-              ${points}
-            </div>
-
-          </div>
-
-          `;
-
-        }).join("");
-
-    }else{
-
-      board.innerHTML = `
-
-        <div class="empty">
-
-          No country scores yet.<br>
-
-          Comment a country name
-          in YouTube Live.
-
-        </div>
-
-      `;
-
-    }
-
-
-    const recent =
-      document.getElementById("recentList");
-
-
-    const items =
-      data.recent || [];
-
-
-    if(items.length){
-
-      recent.innerHTML =
-        items.slice(0,10)
-        .map(item=>`
-
-          <div class="event">
-
-            <span>
-
-              <b>
-                ${escapeHtml(item.author)}
-              </b>
-
-              →
-              ${flags[item.country] || "🌐"}
-
-              ${escapeHtml(item.country)}
-
-            </span>
-
-            <b>
-              +${item.amount}
-            </b>
-
-          </div>
-
-        `).join("");
-
-    }else{
-
-      recent.innerHTML = `
-
-        <div class="empty">
-          Waiting for comments...
-        </div>
-
-      `;
-
-    }
-
-
-  }catch(error){
-
-    document.getElementById("dot")
-      .className="dot";
-
-    document.getElementById("statusText")
-      .textContent="Server connection error";
-
-  }
-
+const COUNTRIES = [
+["Afghanistan","🇦🇫",["afghanistan","afghan"]],["Albania","🇦🇱",["albania"]],["Algeria","🇩🇿",["algeria"]],["Andorra","🇦🇩",["andorra"]],
+["Angola","🇦🇴",["angola"]],["Antigua and Barbuda","🇦🇬",["antigua and barbuda","antigua"]],["Argentina","🇦🇷",["argentina"]],
+["Armenia","🇦🇲",["armenia"]],["Australia","🇦🇺",["australia"]],["Austria","🇦🇹",["austria"]],["Azerbaijan","🇦🇿",["azerbaijan"]],
+["Bahamas","🇧🇸",["bahamas","the bahamas"]],["Bahrain","🇧🇭",["bahrain"]],["Bangladesh","🇧🇩",["bangladesh"]],["Barbados","🇧🇧",["barbados"]],
+["Belarus","🇧🇾",["belarus"]],["Belgium","🇧🇪",["belgium"]],["Belize","🇧🇿",["belize"]],["Benin","🇧🇯",["benin"]],
+["Bhutan","🇧🇹",["bhutan"]],["Bolivia","🇧🇴",["bolivia","bolivia plurinational state"]],["Bosnia and Herzegovina","🇧🇦",["bosnia","bosnia and herzegovina"]],
+["Botswana","🇧🇼",["botswana"]],["Brazil","🇧🇷",["brazil"]],["Brunei","🇧🇳",["brunei"]],["Bulgaria","🇧🇬",["bulgaria"]],
+["Burkina Faso","🇧🇫",["burkina faso"]],["Burundi","🇧🇮",["burundi"]],["Cabo Verde","🇨🇻",["cabo verde","cape verde"]],
+["Cambodia","🇰🇭",["cambodia"]],["Cameroon","🇨🇲",["cameroon"]],["Canada","🇨🇦",["canada"]],["Central African Republic","🇨🇫",["central african republic"]],
+["Chad","🇹🇩",["chad"]],["Chile","🇨🇱",["chile"]],["China","🇨🇳",["china"]],["Colombia","🇨🇴",["colombia"]],
+["Comoros","🇰🇲",["comoros"]],["Congo","🇨🇬",["congo","republic of the congo"]],["Costa Rica","🇨🇷",["costa rica"]],
+["Croatia","🇭🇷",["croatia"]],["Cuba","🇨🇺",["cuba"]],["Cyprus","🇨🇾",["cyprus"]],["Czechia","🇨🇿",["czechia","czech republic"]],
+["Denmark","🇩🇰",["denmark"]],["Djibouti","🇩🇯",["djibouti"]],["Dominica","🇩🇲",["dominica"]],["Dominican Republic","🇩🇴",["dominican republic"]],
+["Ecuador","🇪🇨",["ecuador"]],["Egypt","🇪🇬",["egypt"]],["El Salvador","🇸🇻",["el salvador"]],["Equatorial Guinea","🇬🇶",["equatorial guinea"]],
+["Eritrea","🇪🇷",["eritrea"]],["Estonia","🇪🇪",["estonia"]],["Eswatini","🇸🇿",["eswatini","swaziland"]],["Ethiopia","🇪🇹",["ethiopia"]],
+["Fiji","🇫🇯",["fiji"]],["Finland","🇫🇮",["finland"]],["France","🇫🇷",["france"]],["Gabon","🇬🇦",["gabon"]],
+["Gambia","🇬🇲",["gambia","the gambia"]],["Georgia","🇬🇪",["georgia"]],["Germany","🇩🇪",["germany"]],["Ghana","🇬🇭",["ghana"]],
+["Greece","🇬🇷",["greece"]],["Grenada","🇬🇩",["grenada"]],["Guatemala","🇬🇹",["guatemala"]],["Guinea","🇬🇳",["guinea"]],
+["Guinea-Bissau","🇬🇼",["guinea-bissau","guinea bissau"]],["Guyana","🇬🇾",["guyana"]],["Haiti","🇭🇹",["haiti"]],
+["Honduras","🇭🇳",["honduras"]],["Hungary","🇭🇺",["hungary"]],["Iceland","🇮🇸",["iceland"]],["India","🇮🇳",["india"]],
+["Indonesia","🇮🇩",["indonesia"]],["Iran","🇮🇷",["iran","iran islamic republic"]],["Iraq","🇮🇶",["iraq"]],["Ireland","🇮🇪",["ireland"]],
+["Israel","🇮🇱",["israel"]],["Italy","🇮🇹",["italy"]],["Jamaica","🇯🇲",["jamaica"]],["Japan","🇯🇵",["japan"]],
+["Jordan","🇯🇴",["jordan"]],["Kazakhstan","🇰🇿",["kazakhstan"]],["Kenya","🇰🇪",["kenya"]],["Kiribati","🇰🇮",["kiribati"]],
+["Kuwait","🇰🇼",["kuwait"]],["Kyrgyzstan","🇰🇬",["kyrgyzstan"]],["Laos","🇱🇦",["laos","lao people's democratic republic"]],
+["Latvia","🇱🇻",["latvia"]],["Lebanon","🇱🇧",["lebanon"]],["Lesotho","🇱🇸",["lesotho"]],["Liberia","🇱🇷",["liberia"]],
+["Libya","🇱🇾",["libya"]],["Liechtenstein","🇱🇮",["liechtenstein"]],["Lithuania","🇱🇹",["lithuania"]],["Luxembourg","🇱🇺",["luxembourg"]],
+["Madagascar","🇲🇬",["madagascar"]],["Malawi","🇲🇼",["malawi"]],["Malaysia","🇲🇾",["malaysia"]],["Maldives","🇲🇻",["maldives"]],
+["Mali","🇲🇱",["mali"]],["Malta","🇲🇹",["malta"]],["Marshall Islands","🇲🇭",["marshall islands"]],["Mauritania","🇲🇷",["mauritania"]],
+["Mauritius","🇲🇺",["mauritius"]],["Mexico","🇲🇽",["mexico"]],["Micronesia","🇫🇲",["micronesia","federated states of micronesia"]],
+["Moldova","🇲🇩",["moldova","republic of moldova"]],["Monaco","🇲🇨",["monaco"]],["Mongolia","🇲🇳",["mongolia"]],["Montenegro","🇲🇪",["montenegro"]],
+["Morocco","🇲🇦",["morocco"]],["Mozambique","🇲🇿",["mozambique"]],["Myanmar","🇲🇲",["myanmar","burma"]],["Namibia","🇳🇦",["namibia"]],
+["Nauru","🇳🇷",["nauru"]],["Nepal","🇳🇵",["nepal"]],["Netherlands","🇳🇱",["netherlands","holland"]],["New Zealand","🇳🇿",["new zealand"]],
+["Nicaragua","🇳🇮",["nicaragua"]],["Niger","🇳🇪",["niger"]],["Nigeria","🇳🇬",["nigeria"]],["North Korea","🇰🇵",["north korea","korea, democratic people's republic"]],
+["North Macedonia","🇲🇰",["north macedonia","macedonia"]],["Norway","🇳🇴",["norway"]],["Oman","🇴🇲",["oman"]],["Pakistan","🇵🇰",["pakistan"]],
+["Palau","🇵🇼",["palau"]],["Palestine","🇵🇸",["palestine","palestine state"]],["Panama","🇵🇦",["panama"]],["Papua New Guinea","🇵🇬",["papua new guinea"]],
+["Paraguay","🇵🇾",["paraguay"]],["Peru","🇵🇪",["peru"]],["Philippines","🇵🇭",["philippines"]],["Poland","🇵🇱",["poland"]],
+["Portugal","🇵🇹",["portugal"]],["Qatar","🇶🇦",["qatar"]],["Romania","🇷🇴",["romania"]],["Russia","🇷🇺",["russia","russian federation"]],
+["Rwanda","🇷🇼",["rwanda"]],["Saint Kitts and Nevis","🇰🇳",["saint kitts and nevis"]],["Saint Lucia","🇱🇨",["saint lucia"]],
+["Saint Vincent and the Grenadines","🇻🇨",["saint vincent and the grenadines"]],["Samoa","🇼🇸",["samoa"]],["San Marino","🇸🇲",["san marino"]],
+["Sao Tome and Principe","🇸🇹",["sao tome and principe"]],["Saudi Arabia","🇸🇦",["saudi arabia"]],["Senegal","🇸🇳",["senegal"]],
+["Serbia","🇷🇸",["serbia"]],["Seychelles","🇸🇨",["seychelles"]],["Sierra Leone","🇸🇱",["sierra leone"]],["Singapore","🇸🇬",["singapore"]],
+["Slovakia","🇸🇰",["slovakia"]],["Slovenia","🇸🇮",["slovenia"]],["Solomon Islands","🇸🇧",["solomon islands"]],["Somalia","🇸🇴",["somalia"]],
+["South Africa","🇿🇦",["south africa"]],["South Korea","🇰🇷",["south korea","korea, republic of"]],["South Sudan","🇸🇸",["south sudan"]],
+["Spain","🇪🇸",["spain"]],["Sri Lanka","🇱🇰",["sri lanka"]],["Sudan","🇸🇩",["sudan"]],["Suriname","🇸🇷",["suriname"]],
+["Sweden","🇸🇪",["sweden"]],["Switzerland","🇨🇭",["switzerland"]],["Syria","🇸🇾",["syria","syrian arab republic"]],["Taiwan","🇹🇼",["taiwan"]],
+["Tajikistan","🇹🇯",["tajikistan"]],["Tanzania","🇹🇿",["tanzania","united republic of tanzania"]],["Thailand","🇹🇭",["thailand"]],
+["Timor-Leste","🇹🇱",["timor-leste","timor leste","east timor"]],["Togo","🇹🇬",["togo"]],["Tonga","🇹🇴",["tonga"]],
+["Trinidad and Tobago","🇹🇹",["trinidad and tobago"]],["Tunisia","🇹🇳",["tunisia"]],["Turkey","🇹🇷",["turkey","türkiye"]],
+["Turkmenistan","🇹🇲",["turkmenistan"]],["Tuvalu","🇹🇻",["tuvalu"]],["Uganda","🇺🇬",["uganda"]],["Ukraine","🇺🇦",["ukraine"]],
+["United Arab Emirates","🇦🇪",["united arab emirates","uae"]],["United Kingdom","🇬🇧",["united kingdom","uk","england","britain","great britain"]],
+["United States","🇺🇸",["united states","usa","us","america","united states of america"]],["Uruguay","🇺🇾",["uruguay"]],["Uzbekistan","🇺🇿",["uzbekistan"]],
+["Vanuatu","🇻🇺",["vanuatu"]],["Vatican City","🇻🇦",["vatican city","holy see"]],["Venezuela","🇻🇪",["venezuela"]],
+["Vietnam","🇻🇳",["vietnam","viet nam"]],["Yemen","🇾🇪",["yemen"]],["Zambia","🇿🇲",["zambia"]],["Zimbabwe","🇿🇼",["zimbabwe"]]
+];
+const map=new Map(), data={};
+for(const [name,flag,aliases] of COUNTRIES){data[name]={name,flag,score:0,last:""};for(const a of aliases)map.set(a,name)}
+const grid=document.getElementById("grid"), feed=document.getElementById("feed"), status=document.getElementById("status"), toast=document.getElementById("toast");
+let events=[];
+
+function normalize(s){return s.toLowerCase().trim().replace(/\s+/g," ")}
+function detectCountry(text){
+  const t=normalize(text).replace(/[.,!?]+$/g,"");
+  if(map.has(t)) return map.get(t);
+  // allow "country: Bangladesh", "#Bangladesh", "Bangladesh +1"
+  const cleaned=t.replace(/^#|^country\s*:\s*/,"").trim().replace(/\s*\+?\d+\s*$/,"").trim();
+  return map.get(cleaned)||null;
 }
-
-
-function escapeHtml(text){
-
-  return String(text).replace(
-    /[&<>"']/g,
-
-    function(character){
-
-      return {
-
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#039;"
-
-      }[character];
-
-    }
-
-  );
-
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function render(){
+  const arr=Object.values(data).sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name));
+  const max=Math.max(1,arr[0]?.score||0);
+  grid.innerHTML=arr.map((c,i)=>`<div class="country ${i===0&&c.score>0?"top":""}">
+    <div class="rank">#${i+1}</div><div class="flag">${c.flag}</div>
+    <div class="name">${c.name}</div><div class="score">${String(c.score).padStart(2,"0")}</div>
+    <div class="bar"><div class="fill" style="width:${Math.min(100,c.score/max*100)}%"></div></div>
+    <div class="last">${c.last?`👤 ${esc(c.last)}`:"No votes yet"}</div>
+  </div>`).join("");
 }
+function addVote(author,text){
+  const country=detectCountry(text);
+  if(!country){showToast(`❌ "${text}" — country not recognized`);return false}
+  data[country].score++;
+  data[country].last=author;
+  events.unshift({author,country,text});
+  events=events.slice(0,8);
+  feed.innerHTML=events.map(e=>`<div class="entry"><div class="mini">${data[e.country].flag}</div><div><b>${esc(e.author)}</b><span>${esc(e.text)} → ${e.country} +1</span></div></div>`).join("");
+  render();
+  showToast(`${data[country].flag} ${author} → ${country} +1`);
+  return true;
+}
+let toastTimer;
+function showToast(t){toast.textContent=t;toast.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove("show"),1800)}
+function setStatus(msg,live=false){status.classList.toggle("live",live);status.querySelector("span").textContent=msg}
+document.getElementById("resetBtn").onclick=()=>{for(const c of Object.values(data)){c.score=0;c.last=""}events=[];feed.innerHTML="";render();showToast("Scores reset")}
+document.getElementById("testBtn").onclick=()=>{const n=document.getElementById("testName").value.trim()||"Test Viewer";const c=document.getElementById("testCountry").value.trim();addVote(n,c)}
+render();
 
-
-update();
-
-setInterval(update,2000);
-
+if(location.protocol!=="file:"){
+  const es=new EventSource("/events");
+  es.onopen=()=>setStatus("YouTube chat connecting…");
+  es.onmessage=e=>{
+    try{
+      const x=JSON.parse(e.data);
+      if(x.type==="status"){setStatus(x.message, /connected/i.test(x.message))}
+      if(x.type==="chat") addVote(x.author,x.text);
+    }catch{}
+  };
+  es.onerror=()=>setStatus("Reconnecting to live chat…");
+}else{
+  setStatus("Demo mode — open through Node server");
+}
 </script>
-
 </body>
 </html>
