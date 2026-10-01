@@ -312,9 +312,10 @@ async function update(){
     }
 
 
-    const scores =
-      Object.entries(data.scores || {})
-      .sort((a,b)=>b[1]-a[1]);
+    const scores = Object.keys(flags).map(country => [
+  country,
+  Number((data.scores || {})[country] || 0)
+]).sort((a,b) => b[1] - a[1]);
 
 
     const board =
