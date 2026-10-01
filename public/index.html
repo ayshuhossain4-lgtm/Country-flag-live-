@@ -1,9 +1,473 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Country Flag Live</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Country Flag Live</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  width:100%;
+  min-height:100%;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#000;
+  color:#fff;
+}
+
+body{
+  display:flex;
+  justify-content:center;
+  padding:18px;
+}
+
+.board{
+  width:100%;
+  max-width:520px;
+  min-height:90vh;
+  background:rgba(10,10,15,.96);
+  border:2px solid #292932;
+  border-radius:24px;
+  padding:18px;
+}
+
+.title{
+  text-align:center;
+  font-size:28px;
+  font-weight:900;
+  margin-bottom:5px;
+}
+
+.sub{
+  text-align:center;
+  color:#aaa;
+  font-size:13px;
+  margin-bottom:15px;
+}
+
+.status{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:7px;
+  font-size:12px;
+  color:#aaa;
+  margin-bottom:14px;
+}
+
+.dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#777;
+}
+
+.dot.on{
+  background:#20df6b;
+  box-shadow:0 0 10px #20df6b;
+}
+
+.error{
+  display:none;
+  background:#32171b;
+  color:#ffb4b4;
+  padding:9px;
+  border-radius:10px;
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+#leaderboard{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:44px 48px 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  background:#15151b;
+  border:1px solid #292932;
+  border-radius:15px;
+}
+
+.rank{
+  text-align:center;
+  color:#aaa;
+  font-size:18px;
+  font-weight:900;
+}
+
+.flag{
+  font-size:31px;
+}
+
+.country{
+  font-size:17px;
+  font-weight:800;
+}
+
+.points{
+  font-size:19px;
+  font-weight:900;
+}
+
+.recent{
+  margin-top:18px;
+}
+
+.recent h2{
+  font-size:15px;
+  margin:0 0 9px;
+  color:#ddd;
+}
+
+.event{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  padding:8px 10px;
+  margin-bottom:6px;
+  border-radius:10px;
+  background:#111116;
+  font-size:12px;
+  color:#bbb;
+}
+
+.event b{
+  color:#fff;
+}
+
+.empty{
+  text-align:center;
+  color:#777;
+  padding:18px;
+  font-size:13px;
+}
+
+.footer{
+  text-align:center;
+  color:#666;
+  font-size:10px;
+  margin-top:13px;
+}
+</style>
 </head>
+
 <body>
-  <h1>Country Flag Live is running</h1>
+
+<div class="board">
+
+  <div class="title">🌍 COUNTRY FLAG LIVE</div>
+
+  <div class="sub">
+    Comment a country name to add +1 point
+  </div>
+
+  <div class="status">
+    <span id="dot" class="dot"></span>
+    <span id="statusText">Connecting...</span>
+  </div>
+
+  <div id="error" class="error"></div>
+
+  <div id="leaderboard"></div>
+
+  <div class="recent">
+    <h2>💬 Recent Viewers</h2>
+    <div id="recentList">
+      <div class="empty">Waiting for comments...</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Country Flag Live • YouTube Live
+  </div>
+
+</div>
+
+<script>
+
+const flags = {
+
+"Bangladesh":"🇧🇩",
+"India":"🇮🇳",
+"Pakistan":"🇵🇰",
+"Nepal":"🇳🇵",
+"Bhutan":"🇧🇹",
+"Sri Lanka":"🇱🇰",
+"Thailand":"🇹🇭",
+"Vietnam":"🇻🇳",
+"Indonesia":"🇮🇩",
+"Malaysia":"🇲🇾",
+"Philippines":"🇵🇭",
+
+"Brazil":"🇧🇷",
+"United States":"🇺🇸",
+"Japan":"🇯🇵",
+"South Korea":"🇰🇷",
+"China":"🇨🇳",
+"Russia":"🇷🇺",
+
+"Germany":"🇩🇪",
+"France":"🇫🇷",
+"Italy":"🇮🇹",
+"Spain":"🇪🇸",
+"Portugal":"🇵🇹",
+
+"Canada":"🇨🇦",
+"Australia":"🇦🇺",
+"New Zealand":"🇳🇿",
+"Mexico":"🇲🇽",
+
+"Turkey":"🇹🇷",
+"Iran":"🇮🇷",
+"Iraq":"🇮🇶",
+"Qatar":"🇶🇦",
+"Saudi Arabia":"🇸🇦",
+
+"United Arab Emirates":"🇦🇪",
+"Egypt":"🇪🇬",
+"Morocco":"🇲🇦",
+
+"Albania":"🇦🇱",
+"Kosovo":"🇽🇰",
+"Greece":"🇬🇷",
+"Norway":"🇳🇴",
+"Sweden":"🇸🇪",
+"Finland":"🇫🇮",
+"Denmark":"🇩🇰",
+"Poland":"🇵🇱",
+"Ukraine":"🇺🇦",
+"Romania":"🇷🇴",
+
+"South Africa":"🇿🇦",
+"Nigeria":"🇳🇬",
+"Ghana":"🇬🇭",
+"Kenya":"🇰🇪",
+
+"Argentina":"🇦🇷",
+"Chile":"🇨🇱",
+"Colombia":"🇨🇴",
+"Peru":"🇵🇪",
+"Uruguay":"🇺🇾"
+
+};
+
+
+async function update(){
+
+  try{
+
+    const response =
+      await fetch("/api/state",{cache:"no-store"});
+
+    const data =
+      await response.json();
+
+
+    const dot =
+      document.getElementById("dot");
+
+    const status =
+      document.getElementById("statusText");
+
+    const error =
+      document.getElementById("error");
+
+
+    if(data.connected){
+
+      dot.className="dot on";
+
+      status.textContent =
+        "LIVE • Connected to YouTube";
+
+    }else{
+
+      dot.className="dot";
+
+      status.textContent =
+        "Waiting for YouTube Live";
+
+    }
+
+
+    if(data.error){
+
+      error.style.display="block";
+
+      error.textContent =
+        data.error;
+
+    }else{
+
+      error.style.display="none";
+
+    }
+
+
+    const scores =
+      Object.entries(data.scores || {})
+      .sort((a,b)=>b[1]-a[1]);
+
+
+    const board =
+      document.getElementById("leaderboard");
+
+
+    if(scores.length){
+
+      board.innerHTML =
+        scores.map((item,index)=>{
+
+          const country =
+            item[0];
+
+          const points =
+            item[1];
+
+          return `
+
+          <div class="row">
+
+            <div class="rank">
+              #${index+1}
+            </div>
+
+            <div class="flag">
+              ${flags[country] || "🌐"}
+            </div>
+
+            <div class="country">
+              ${country}
+            </div>
+
+            <div class="points">
+              ${points}
+            </div>
+
+          </div>
+
+          `;
+
+        }).join("");
+
+    }else{
+
+      board.innerHTML = `
+
+        <div class="empty">
+
+          No country scores yet.<br>
+
+          Comment a country name
+          in YouTube Live.
+
+        </div>
+
+      `;
+
+    }
+
+
+    const recent =
+      document.getElementById("recentList");
+
+
+    const items =
+      data.recent || [];
+
+
+    if(items.length){
+
+      recent.innerHTML =
+        items.slice(0,10)
+        .map(item=>`
+
+          <div class="event">
+
+            <span>
+
+              <b>
+                ${escapeHtml(item.author)}
+              </b>
+
+              →
+              ${flags[item.country] || "🌐"}
+
+              ${escapeHtml(item.country)}
+
+            </span>
+
+            <b>
+              +${item.amount}
+            </b>
+
+          </div>
+
+        `).join("");
+
+    }else{
+
+      recent.innerHTML = `
+
+        <div class="empty">
+          Waiting for comments...
+        </div>
+
+      `;
+
+    }
+
+
+  }catch(error){
+
+    document.getElementById("dot")
+      .className="dot";
+
+    document.getElementById("statusText")
+      .textContent="Server connection error";
+
+  }
+
+}
+
+
+function escapeHtml(text){
+
+  return String(text).replace(
+    /[&<>"']/g,
+
+    function(character){
+
+      return {
+
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+
+      }[character];
+
+    }
+
+  );
+
+}
+
+
+update();
+
+setInterval(update,2000);
+
+</script>
+
 </body>
 </html>
