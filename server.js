@@ -149,4 +149,8 @@ app.post("/api/test", (req,res) => {
   res.json({country});
 });
 
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "Country_Battle_Live_with_Viewer_Names.html"));
+});
+
 app.listen(PORT, () => console.log(`Country Flag Live running on port ${PORT}`));
